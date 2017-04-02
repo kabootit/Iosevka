@@ -1,0 +1,258 @@
+# Variants
+[simple.v-l-hooky]
+l = 'hooky'
+tag = 'cv09'
+
+[simple.v-i-hooky]
+dotlessi = 'hooky'
+tag = 'cv05'
+
+[simple.v-l-zshaped]
+l = 'zshaped'
+tag = 'cv10'
+
+[simple.v-i-zshaped]
+dotlessi = 'zshaped'
+tag = 'cv06'
+
+[simple.v-l-serifed]
+l = 'serifed'
+tag = 'cv07'
+
+[simple.v-i-serifed]
+dotlessi = 'serifed'
+tag = 'cv03'
+
+[simple.v-l-italic]
+l = 'italic'
+tag = 'cv08'
+
+[simple.v-i-italic]
+dotlessi = 'italic'
+tag = 'cv04'
+
+[simple.v-l-tailed]
+l = 'tailed'
+tag = 'cv27'
+
+[simple.v-l-hookybottom]
+l = 'hookybottom'
+tag = 'cv28'
+
+[simple.v-a-singlestorey]
+a = 'singlestorey'
+tag = 'cv02'
+
+[simple.v-a-doublestorey]
+a = 'doublestorey'
+tag = 'cv01'
+
+[simple.v-g-singlestorey]
+g = 'singlestorey'
+tag = 'cv12'
+
+[simple.v-g-doublestorey]
+g = 'doublestorey'
+tag = 'cv11'
+
+[simple.v-g-opendoublestorey]
+g = 'opendoublestorey'
+tag = 'cv24'
+
+[simple.v-zero-slashed]
+zero = 'slashed'
+tag = 'cv13'
+
+[simple.v-zero-dotted]
+zero = 'dotted'
+tag = 'cv14'
+
+[simple.v-zero-unslashed]
+zero = 'unslashed'
+tag = 'cv15'
+
+[simple.v-tilde-high]
+asciitilde = 'high'
+tag = 'cv16'
+
+[simple.v-tilde-low]
+asciitilde = 'low'
+tag = 'cv17'
+
+[simple.v-asterisk-high]
+asterisk = 'high'
+tag = 'cv18'
+
+[simple.v-asterisk-low]
+asterisk = 'low'
+tag = 'cv19'
+
+[simple.v-underscore-high]
+underscore = 'high'
+tag = 'cv20'
+
+[simple.v-underscore-low]
+underscore = 'low'
+tag = 'cv21'
+
+[simple.v-paragraph-high]
+paragraph = 'high'
+revertParagraph = 'high'
+tag = 'cv22'
+
+[simple.v-paragraph-low]
+paragraph = 'low'
+revertParagraph = 'low'
+tag = 'cv23'
+
+[simple.v-m-longleg]
+m = 'longleg'
+tag = 'cv25'
+
+[simple.v-m-shortleg]
+m = 'shortleg'
+tag = 'cv26'
+
+[simple.v-caret-high]
+asciicaret = 'high'
+tag = 'cv29'
+
+[simple.v-caret-low]
+asciicaret = 'low'
+tag = 'cv30'
+
+[simple.v-at-long]
+at = 'long'
+tag = 'cv31'
+
+[simple.v-at-fourfold]
+at = 'fourfold'
+tag = 'cv32'
+
+[simple.v-at-short]
+at = 'short'
+tag = 'cv33'
+
+[simple.v-eszet-traditional]
+eszet = 'traditional'
+tag = 'cv34'
+
+[simple.v-eszet-sulzbacher]
+eszet = 'sulzbacher'
+tag = 'cv35'
+
+[simple.v-brace-straight]
+braceLeft = 'straight'
+braceRight = 'straight'
+tag = 'cv36'
+
+[simple.v-brace-curly]
+braceLeft = 'curly'
+braceRight = 'curly'
+tag = 'cv37'
+
+[simple.v-dollar-open]
+dollar = 'open'
+tag = 'cv38'
+
+[simple.v-dollar-through]
+dollar = 'through'
+tag = 'cv39'
+
+[simple.v-t-standard]
+t = 'standard'
+tag = 'cv40'
+
+[simple.v-t-cross]
+t = 'cross'
+tag = 'cv41'
+
+[simple.v-q-taily]
+Q = 'taily'
+tag = 'cv42'
+
+[simple.v-q-straight]
+Q = 'straight'
+tag = 'cv43'
+
+[simple.v-numbersign-upright]
+numbersign = 'upright'
+tag = 'cv44'
+
+[simple.v-numbersign-slanted]
+numbersign = 'slanted'
+tag = 'cv45'
+
+[simple.others]
+I = 'serifed'
+J = 'serifed'
+dotlessj = 'serifed'
+
+[default]
+design = [
+	'v-m-longleg',
+	'v-t-standard',
+	'v-q-taily',
+	'v-zero-slashed',
+	'v-tilde-low',
+	'v-asterisk-high',
+	'v-paragraph-high',
+	'v-caret-high',
+	'v-underscore-high',
+	'v-at-short',
+	'v-eszet-sulzbacher',
+	'v-brace-curly',
+	'v-dollar-through',
+	'v-numbersign-upright',
+	'others'
+]
+upright = [
+	'v-a-doublestorey',
+	'v-i-serifed',
+	'v-l-serifed',
+	'v-g-doublestorey'
+]
+italic = [
+	'v-a-singlestorey',
+	'v-i-italic',
+	'v-l-italic',
+	'v-g-singlestorey'
+]
+
+# Composite character options, overrides default settings above.
+# Andale Mono Style
+[composite.ss01]
+design = ['v-i-hooky', 'v-a-doublestorey', 'v-l-zshaped', 'v-at-fourfold', 'v-zero-dotted', 'v-g-doublestorey', 'v-brace-straight', 'v-underscore-low', 'v-numbersign-slanted']
+
+# Anonymous Pro Style
+[composite.ss02]
+design = ['v-at-fourfold', 'v-a-doublestorey', 'v-asterisk-low', 'v-brace-straight', 'v-g-singlestorey', 'v-l-serifed', 'v-i-serifed']
+
+# Consolas Style
+[composite.ss03]
+design = ['v-at-fourfold', 'v-underscore-low', 'v-brace-straight', 'v-numbersign-slanted']
+
+# Menlo Style
+[composite.ss04]
+design = ['v-at-long', 'v-a-doublestorey', 'v-underscore-low', 'v-g-singlestorey', 'v-i-serifed', 'v-l-italic', 'v-brace-straight', 'v-asterisk-low', 'v-numbersign-slanted']
+
+# Fira Mono Style
+[composite.ss05]
+design = ['v-underscore-low', 'v-a-doublestorey', 'v-i-serifed', 'v-g-opendoublestorey', 'v-l-italic', 'v-numbersign-slanted', 'v-zero-dotted']
+
+# Liberation Mono Style
+[composite.ss06]
+design = ['v-at-fourfold', 'v-a-doublestorey', 'v-i-serifed', 'v-l-serifed', 'v-g-singlestorey', 'v-brace-straight', 'v-zero-dotted', 'v-numbersign-slanted']
+
+# Monaco Style
+[composite.ss07]
+design = ['v-at-fourfold', 'v-a-singlestorey', 'v-i-zshaped', 'v-g-singlestorey', 'v-l-zshaped', 'v-brace-straight', 'v-numbersign-slanted']
+
+# Pragmata Pro Style
+[composite.ss08]
+design = ['v-at-long', 'v-a-doublestorey', 'v-l-serifed', 'v-i-serifed', 'v-asterisk-low', 'v-zero-dotted', 'v-brace-straight', 'v-dollar-open', 'v-underscore-low', 'v-numbersign-slanted']
+
+# Source Code Pro Style
+[composite.ss09]
+design = ['v-at-long', 'v-l-italic', 'v-asterisk-low', 'v-zero-dotted', 'v-dollar-open', 'v-numbersign-slanted']
+upright = ['v-i-hooky']

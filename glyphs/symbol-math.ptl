@@ -1,0 +1,566 @@
+###### Mathematical symbols
+$$include '../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../support/utils'
+import [designParameters] from '../meta/aesthetics'
+
+export : define [apply] : begin
+	glyph-module-entry commonShapes overmarks letterBasic letterExt
+
+	### Letter-like
+	sketch # micro
+		include glyphs.mu AS_BASE
+		if SLAB : if (!para.isItalic) : begin
+			include : CenterBottomSerif (SB + HALFSTROKE * HVCONTRAST) DESCENDER JUT
+			tag-contour 'serifLB'
+		save 'micro' 0xB5
+	
+	sketch # forall
+		include : LambdaShape OPERATORSTROKE
+		eject-contour 'serif'
+		include : HBar (SB + OPERATORSTROKE) (RIGHTSB - OPERATORSTROKE) (XH / 2) OPERATORSTROKE
+		include : FlipAround MIDDLE (CAP / 2)
+	
+		save 'forall' 0x2200
+	
+	sketch # exists
+		include : HBarTop (SB * 1.5 - O) RIGHTSB CAP OPERATORSTROKE
+		include : HBarBottom (SB * 1.5 - O) RIGHTSB 0 OPERATORSTROKE
+		include : HBar (SB * 1.5 - O) (RIGHTSB - HALFSTROKE) (CAP * 0.5) OPERATORSTROKE
+		include : VBarLeft (SB * 1.5) 0 CAP OPERATORSTROKE
+		include : FlipAround MIDDLE (CAP / 2)
+	
+		save 'exists' 0x2203
+	
+	sketch # emptyset
+		include : OShape CAP 0 SB RIGHTSB OPERATORSTROKE
+		
+		local fine : OPERATORSTROKE / 2
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat (SB + O + fine) [mix CAP 0 1.05]
+			curl (RIGHTSB - O - fine) [mix 0 CAP 1.05]
+	
+		save 'emptyset' 0x2205
+	
+	sketch # increment
+		include markset.capital
+		include : LambdaShape OPERATORSTROKE
+		eject-contour 'serif'
+		include : HBarBottom (SB + (OPERATORSTROKE / 2)) (RIGHTSB - (OPERATORSTROKE / 2)) 0 OPERATORSTROKE
+	
+		save 'increment' 0x2206
+	turned 'nabla' 0x2207 'increment' MIDDLE (CAP / 2)
+
+	if [not recursive] : let [s : (RIGHTSB - SB - O * 4 + (FULLWIDTH - WIDTH) * 0.5) / CAP] : let [df : Miniature (glyphs -- {'eight' 'rotetedpropto'}) (crowd -- 4) (scale -- s) (slantAngle -- 0)] : begin
+		sketch # infty
+			set-width FULLWIDTH
+			include df.eight
+			apply-transform : Translate (-MIDDLE) (-CAP / 2)
+			apply-transform : Rotate (Math.PI / 2)
+			apply-transform : Scale s
+			apply-transform : Translate FWMIDDLE parenMid
+			apply-transform : Italify
+		
+			save 'infty' 0x221E
+		
+		sketch # propto
+			set-width FULLWIDTH
+			include df.rotetedpropto
+			apply-transform : Translate (-MIDDLE) (-CAP / 2)
+			apply-transform : Rotate (Math.PI / 2)
+			apply-transform : Scale s
+			apply-transform : Translate FWMIDDLE parenMid
+			apply-transform : Italify
+			save 'propto' 0x221D
+	
+	sketch # partial
+		include markset.b
+		include : OShape (CAP * 0.65) 0 SB RIGHTSB OPERATORSTROKE
+		include : dispiro
+			widths.lhs OPERATORSTROKE
+			flat (RIGHTSB - OX) SMALLSMOOTHA
+			curl (RIGHTSB - OX) (CAP - SMALLSMOOTHB)
+			hookend CAPO
+			g4   SB (CAP - HOOK)
+		save 'partial' 0x2202
+
+	### Mathematical Operators
+	sketch # mathO
+		local sw OPERATORSTROKE
+		local k 1
+		include : OShape (parenMid + (RIGHTSB - SB) * 0.5 + sw * k) (parenMid - (RIGHTSB - SB) * 0.5 - sw * k) (SB - sw * k) (RIGHTSB + sw * k) sw (SMALLSMOOTHA * 3) (SMALLSMOOTHB * 3)
+		save 'mathO'
+	sketch # plus
+		include markset.plus
+		include : HBar SB RIGHTSB parenMid OPERATORSTROKE
+		include : VBar MIDDLE plusTop plusBot OPERATORSTROKE
+		save 'plus' '+'
+	sketch # minus
+		include markset.plus
+		include : HBar SB RIGHTSB parenMid OPERATORSTROKE
+		save 'minus' 0x2212
+	
+	sketch # plusminus
+		include markset.plus
+		include : HBarBottom SB RIGHTSB 0 OPERATORSTROKE
+		include glyphs.plus
+		save 'plusminus' 0xB1
+	turned 'minusplus' 0x2213 'plusminus' MIDDLE parenMid
+
+	local equalHalfSpace : (parenTop - parenBot) * designParameters.equal_wideness
+	sketch # equal
+		include markset.plus
+		include : HBar SB RIGHTSB (parenMid + equalHalfSpace) OPERATORSTROKE
+		include : HBar SB RIGHTSB (parenMid - equalHalfSpace) OPERATORSTROKE
+		save 'equal' '='
+	
+	sketch # less
+		include markset.plus
+		local top : mix parenMid parenTop 0.5
+		local bot : mix parenMid parenBot 0.5
+		local exp : Math.sqrt : 1 + (top - bot) / (2 * (RIGHTSB - SB)) * (top - bot) / (2 * (RIGHTSB - SB))
+		
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat RIGHTSB top
+			curl SB [mix top bot 0.5] [widths.heading (OPERATORSTROKE / 2 * exp) (OPERATORSTROKE / 2 * exp) LEFTWARD]
+		
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat RIGHTSB bot
+			curl SB [mix top bot 0.5] [widths.heading (OPERATORSTROKE / 2 * exp) (OPERATORSTROKE / 2 * exp) LEFTWARD]
+		save 'less' '<'
+	
+	sketch # greater
+		include markset.plus
+		local top : mix 0 CAP 0.75
+		local bot : mix 0 CAP 0.1
+		
+		include glyphs.less
+		include : FlipAround MIDDLE parenMid
+		save 'greater' '>'
+
+	sketch # multiply
+		include markset.plus
+		local radius : (RIGHTSB - SB) / 2
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat (MIDDLE - radius) (parenMid - radius)
+			curl (MIDDLE + radius) (parenMid + radius)
+		
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat (MIDDLE + radius) (parenMid - radius)
+			curl (MIDDLE - radius) (parenMid + radius)
+	
+		save 'multiply' 0xD7
+	
+	sketch # divide
+		include markset.plus
+		include glyphs.minus
+		local radius : (RIGHTSB - SB) / 2
+		include : Ring (parenMid + radius + DOTRADIUS) (parenMid + radius - DOTRADIUS) (MIDDLE - DOTRADIUS + O) (MIDDLE + DOTRADIUS - O) true
+		include : Ring (parenMid - radius + DOTRADIUS) (parenMid - radius - DOTRADIUS) (MIDDLE - DOTRADIUS + O) (MIDDLE + DOTRADIUS - O) true
+	
+		save 'divide' 0xF7
+	
+	composite 'mathAsterisk' glyphs.'smallasterisk.low' [into-unicode 0x2217]
+	
+	composite 'mathoplus' glyphs.mathO glyphs.plus [into-unicode 0x2295]
+	composite 'mathominus' glyphs.mathO glyphs.minus [into-unicode 0x2296]
+	composite 'mathoasterisk' glyphs.mathO glyphs.mathAsterisk [into-unicode 0x229B]
+	composite 'mathodot' glyphs.mathO [Ring (parenMid + PERIODRADIUS - O) (parenMid - PERIODRADIUS + O) (MIDDLE - PERIODRADIUS + O) (MIDDLE + PERIODRADIUS - O) true] [into-unicode 0x2299]
+	
+	sketch # negate
+		include glyphs.minus
+		include : VBarRight RIGHTSB (parenMid - (RIGHTSB - SB) * 0.55) parenMid OPERATORSTROKE
+		
+		save 'negate' 0xAC
+	
+	sketch # vee
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat SB operTop
+			curl MIDDLE operBot [heading DOWNWARD]
+		
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat RIGHTSB operTop
+			curl MIDDLE operBot [heading DOWNWARD]
+		save 'vee' 0x2228
+	turned 'wedge' 0x2227 'vee' MIDDLE parenMid
+
+	sketch # cup
+		include : UShape operTop operBot OPERATORSTROKE true
+		save 'cup' 0x222A
+	turned 'cap' 0x2229 'cup' MIDDLE parenMid
+
+	### Logicals
+	sketch # vdash
+		include markset.plus
+		include : HBar SB RIGHTSB parenMid OPERATORSTROKE
+		include : VBarLeft SB plusTop plusBot OPERATORSTROKE
+		save 'vdash' 0x22A2
+	turned 'dashv' 0x22A3 'vdash' MIDDLE parenMid
+
+	sketch # assert
+		include markset.plus
+		local l : mix MIDDLE SB designParameters.logic_narrow_shrink
+		local r : mix MIDDLE RIGHTSB designParameters.logic_narrow_shrink
+		include : HBar l r parenMid OPERATORSTROKE
+		include : VBarLeft l plusTop plusBot OPERATORSTROKE
+		save 'assert' 0x22A6
+
+	sketch # models
+		include markset.plus
+		local l : mix MIDDLE SB designParameters.logic_narrow_shrink
+		local r : mix MIDDLE RIGHTSB designParameters.logic_narrow_shrink
+		include : HBar l r [mix parenMid plusTop (1 / 3)] OPERATORSTROKE
+		include : HBar l r [mix parenMid plusBot (1 / 3)] OPERATORSTROKE
+		include : VBarLeft l plusTop plusBot OPERATORSTROKE
+		save 'models' 0x22A7
+
+	sketch # tautalogy
+		include markset.plus
+		local l : mix MIDDLE SB 1
+		local r : mix MIDDLE RIGHTSB 1
+		include : HBar l r [mix parenMid plusTop (1 / 3)] OPERATORSTROKE
+		include : HBar l r [mix parenMid plusBot (1 / 3)] OPERATORSTROKE
+		include : VBarLeft l plusTop plusBot OPERATORSTROKE
+		save 'tautalogy' 0x22A8
+
+	sketch # top
+		include markset.plus
+		include : HBarTop SB RIGHTSB plusTop OPERATORSTROKE
+		include : VBar MIDDLE plusTop plusBot OPERATORSTROKE
+		save 'top' 0x22A4
+	composite 'bot' glyphs.top [FlipAround MIDDLE parenMid] [into-unicode 0x22A5]
+
+	sketch # lesseq
+		include markset.plus
+		local fine : Math.max [adviceBlackness 4] (XH * 0.1)
+		local top : [mix parenMid parenTop 0.5] - fine
+		local bot : [mix parenMid parenBot 0.5] + fine
+		
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat RIGHTSB (top + fine)
+			curl SB ([mix top bot 0.5] + fine) [heading LEFTWARD]
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat SB ([mix top bot 0.5] + fine) [heading RIGHTWARD]
+			curl RIGHTSB (bot + fine)
+		
+		branch
+			include : Upright
+			include : Translate 0 (-fine)
+			include : Italify
+			save 'less.narrow'
+		branch
+			include : HBar SB RIGHTSB (bot - fine) OPERATORSTROKE
+			save 'lesseq' 0x2264
+		branch
+			include : dispiro
+				widths.center OPERATORSTROKE
+				flat SB ([mix top bot 0.5] - fine) [heading RIGHTWARD]
+				curl RIGHTSB (bot - fine)
+			save 'lesseqslant' 0x2A7D
+	
+	sketch # greatereq
+		include markset.plus
+		local fine : Math.max [adviceBlackness 4] (XH * 0.1)
+		local top : [mix parenMid parenTop 0.5] - fine
+		local bot : [mix parenMid parenBot 0.5] + fine
+		
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat SB (top + fine)
+			curl RIGHTSB ([mix top bot 0.5] + fine) [heading RIGHTWARD]
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat RIGHTSB ([mix top bot 0.5] + fine) [heading LEFTWARD]
+			curl SB (bot + fine)
+		
+		branch
+			include : Upright
+			include : Translate 0 (-fine)
+			include : Italify
+			save 'greater.narrow'
+		branch
+			include : HBar SB RIGHTSB (bot - fine) OPERATORSTROKE
+			save 'greatereq' 0x2265
+		branch
+			include : dispiro
+				widths.center OPERATORSTROKE
+				flat RIGHTSB ([mix top bot 0.5] - fine) [heading LEFTWARD]
+				curl SB (bot - fine)
+			save 'greatereqslant' 0x2A7E
+	
+	sketch # subst
+		include markset.plus
+		local top : mix parenMid parenTop 0.5
+		local bot : mix parenMid parenBot 0.5
+		include : dispiro
+			widths.lhs OPERATORSTROKE
+			flat RIGHTSB top [heading LEFTWARD]
+			curl (SB + (top - bot) / 2) top
+			archv
+			g4   SB parenMid
+			arcvh
+			flat (SB + (top - bot) / 2) bot
+			curl RIGHTSB bot [heading RIGHTWARD]
+		save 'subst' 0x2282
+	
+	sketch # element
+		include glyphs.subst AS_BASE
+		include : HBar (SB + HALFSTROKE) RIGHTSB parenMid OPERATORSTROKE
+		save 'element' 0x2208
+	turned nothing 0x2283 'subst' MIDDLE parenMid
+	turned nothing 0x220B 'element' MIDDLE parenMid
+	composite glyphs.element glyphs.underlineBelow [into-unicode 0x22F8]
+
+	sketch # sym
+		include : TildeShape
+			ttop -- parenMid + ((operTop - parenMid) * 0.17)
+			tbot -- parenMid - ((operTop - parenMid) * 0.17)
+			leftEnd -- SB
+			rightEnd -- RIGHTSB
+			hs -- OPERATORSTROKE / 2
+		save 'sym' 0x223C
+	sketch # flipsym
+		include : TildeShape
+			tbot -- parenMid + ((operTop - parenMid) * 0.17)
+			ttop -- parenMid - ((operTop - parenMid) * 0.17)
+			leftEnd -- SB
+			rightEnd -- RIGHTSB
+			hs -- OPERATORSTROKE / 2
+		save 'flipsym' 0x223D
+	
+	sketch # ident
+		include : HBar SB RIGHTSB (parenMid + equalHalfSpace * 1.5) OPERATORSTROKE
+		include : HBar SB RIGHTSB parenMid OPERATORSTROKE
+		include : HBar SB RIGHTSB (parenMid - equalHalfSpace * 1.5) OPERATORSTROKE
+		save 'ident' 0x2261
+		
+	sketch # ident
+		include : HBar SB RIGHTSB (parenMid + equalHalfSpace * 2.25) OPERATORSTROKE
+		include : HBar SB RIGHTSB (parenMid + equalHalfSpace * 0.75) OPERATORSTROKE
+		include : HBar SB RIGHTSB (parenMid - equalHalfSpace * 0.75) OPERATORSTROKE
+		include : HBar SB RIGHTSB (parenMid - equalHalfSpace * 2.25) OPERATORSTROKE
+		save 'iiiident' 0x2263
+	vdual 'approx' 0x2248 'sym' (equalHalfSpace * 1.75)
+
+	### 'Negative Operators'
+	define [notGlyph newid unicode oldid top bot prop shift] : create-glyph [fallback newid : 'not' + oldid] : glyph-construction
+		assign-unicode unicode
+		include glyphs.(oldid)
+		
+		include : dispiro
+			widths.center [adviceBlackness 4]
+			flat ([fallback shift 0] + [mix SB RIGHTSB [fallback prop 0.25]]) [fallback bot operBot]
+			curl ([fallback shift 0] + [mix RIGHTSB SB [fallback prop 0.25]]) [fallback top operTop]
+	
+	define [notGlyph.right newid unicode oldid top bot prop shift] : notGlyph newid unicode oldid top bot prop (-OPERATORSTROKE * 0.5)
+	define [notGlyph.left newid unicode oldid top bot prop shift] : notGlyph newid unicode oldid top bot prop (OPERATORSTROKE * 0.5)
+	
+	notGlyph 'noteq' 0x2260 'equal'
+	notGlyph 'notident' 0x2262 'ident'
+	notGlyph 'notvdash' 0x22AC 'vdash'
+	notGlyph 'nottaut' 0x22AD 'tautalogy'
+	notGlyph.left 'notless' 0x226E 'less'
+	notGlyph.right 'notgreater' 0x226F 'greater'
+	notGlyph 'notapprox' 0x2249 'approx' [mix parenMid operTop 0.75] [mix parenMid operBot 0.75]
+	notGlyph 'notsym' 0x2241 'sym' [mix parenMid operTop 0.75] [mix parenMid operBot 0.75]
+	notGlyph.left 'notsubst' 0x2284 'subst'
+	notGlyph.right 'notturnsubst' 0x2285 'turnsubst'
+	notGlyph.left 'notelement' 0x2209 'element'
+	notGlyph.right 'notturnelement' 0x220C 'turnelement'
+	notGlyph.left 'notlesseq' 0x2270 'lesseq'
+	notGlyph.right 'notgreatereq' 0x2271 'greatereq'
+	notGlyph.right 'nonexist' 0x2204 'exists' (CAP - DESCENDER / 2) (DESCENDER / 2) 0.4
+
+	### 'Large Operators'
+	sketch # sum
+		include : SigmaShape parenTop parenBot OPERATORSTROKE
+		save 'sum' 0x2211
+	
+	sketch # product
+		include : PiShape parenTop parenBot (shrinkrate -- 0) (_fine -- OPERATORSTROKE)
+		save 'product' 0x220F
+	turned 'coproduct' 0x2210 'product' MIDDLE parenMid
+
+	sketch # integrate
+		include : LongSShape parenTop parenBot HOOK (HOOK * 0.75) OPERATORSTROKE
+		save 'integrate' 0x222B
+	dual 'doubleintegrate' 0x222C 'integrate' (0.5 * WIDTH)
+	
+	sketch # ringintegrate
+		include glyphs.integrate
+		include : OShape (parenMid + (RIGHTSB - SB) / 2) (parenMid - (RIGHTSB - SB) / 2) SB RIGHTSB OPERATORSTROKE
+		save 'ringintegrate' 0x222E
+	
+	sketch # Vee
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat SB parenTop
+			curl MIDDLE parenBot [heading DOWNWARD]
+		
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat RIGHTSB parenTop
+			curl MIDDLE parenBot [heading DOWNWARD]
+		save 'Vee' 0x22C1
+	turned 'Wedge' 0x22C0 'Vee' MIDDLE parenMid
+	
+	sketch # Cup
+		include : UShape parenTop parenBot OPERATORSTROKE true
+		save 'Cup' 0x22C3
+	turned 'Cap' 0x22C2 'Cup' MIDDLE parenMid
+
+	### APL
+	local aplBoxSW : adviceBlackness 4.5
+	sketch # aplsquare
+		local l [mix 0 SB (1 / 3)]
+		local r [mix WIDTH RIGHTSB (1 / 3)]
+		include : HBarTop    l r operTop aplBoxSW
+		include : HBarBottom l r operBot aplBoxSW
+		include : VBarLeft   l operTop operBot aplBoxSW
+		include : VBarRight  r operTop operBot aplBoxSW
+		save 'aplsquare' 0x2395
+	sketch # aplibar
+		local l [mix 0 SB (1 / 3)]
+		local r [mix WIDTH RIGHTSB (1 / 3)]
+		include : HBarTop    l r operTop aplBoxSW
+		include : HBarBottom l r operBot aplBoxSW
+		include : VBar    MIDDLE operTop operBot aplBoxSW
+		save 'aplibar' 0x2336
+	sketch # aplsquish
+		local l SB
+		local r RIGHTSB
+		include : HBarTop    l r operTop aplBoxSW
+		include : HBarBottom l r operBot aplBoxSW
+		include : VBarLeft   l operTop operBot aplBoxSW
+		include : VBarRight  r operTop operBot aplBoxSW
+		save 'aplsquish' 0x2337
+	sketch # aplbar
+		include : VBar MIDDLE parenTop parenBot aplBoxSW
+		save 'aplbar'
+	sketch # aplbackslash
+		include : dispiro
+			widths.center aplBoxSW
+			flat SB       operTop
+			curl RIGHTSB  operBot
+		save 'aplbackslash'
+	
+	define aplBoxTfm : ScaleAround MIDDLE parenMid [Math.min ((WIDTH - aplBoxSW * 1.75) / WIDTH) ((operTop - operBot) / (parenTop - parenBot))]
+
+	composite glyphs.equal aplBoxTfm glyphs.aplsquare [into-unicode 0x2338]
+	composite glyphs.divide aplBoxTfm glyphs.aplsquare [into-unicode 0x2339]
+	composite glyphs.hwwhitediamond aplBoxTfm glyphs.aplsquare [into-unicode 0x233A]
+	composite glyphs.hwsmallwhitecircle aplBoxTfm glyphs.aplsquare [into-unicode 0x233B]
+	composite glyphs.hwwhitecircle aplBoxTfm glyphs.aplsquare [into-unicode 0x233C]
+	composite glyphs.hwwhitecircle glyphs.aplbar [into-unicode 0x233D]
+	composite glyphs.hwwhitecircle glyphs.hwsmallwhitecircle [into-unicode 0x233E]
+	composite glyphs.minus glyphs.slash [into-unicode 0x233F]
+	composite glyphs.minus glyphs.backslash [into-unicode 0x2340]
+	composite glyphs.slash aplBoxTfm glyphs.aplsquare [into-unicode 0x2341]
+	composite glyphs.backslash aplBoxTfm glyphs.aplsquare [into-unicode 0x2342]
+	composite glyphs.less aplBoxTfm glyphs.aplsquare [into-unicode 0x2343]
+	composite glyphs.greater aplBoxTfm glyphs.aplsquare [into-unicode 0x2344]
+	composite glyphs.hwarrowleft glyphs.aplbar [into-unicode 0x2345]
+	composite glyphs.hwarrowright glyphs.aplbar [into-unicode 0x2346]
+	composite glyphs.hwarrowleft aplBoxTfm glyphs.aplsquare [into-unicode 0x2347]
+	composite glyphs.hwarrowright aplBoxTfm glyphs.aplsquare [into-unicode 0x2348]
+	composite glyphs.hwwhitecircle glyphs.aplbackslash [into-unicode 0x2349]
+	composite glyphs.bot glyphs.underlineBelow [into-unicode 0x234A]
+	composite glyphs.increment glyphs.aplbar [into-unicode 0x234B]
+	composite glyphs.vee aplBoxTfm glyphs.aplsquare [into-unicode 0x234C]
+	composite glyphs.increment aplBoxTfm glyphs.aplsquare [into-unicode 0x234D]
+	composite
+		begin glyphs.hwwhitecircle
+		VBar MIDDLE operBot operTop aplBoxSW
+		HBarBottom SB RIGHTSB operBot aplBoxSW
+		into-unicode 0x234E
+	composite glyphs.hwarrowup glyphs.minus [into-unicode 0x234F]
+	composite glyphs.hwarrowup aplBoxTfm glyphs.aplsquare [into-unicode 0x2350]
+	composite glyphs.top glyphs.overlineAbove [into-unicode 0x2351]
+	composite glyphs.nabla glyphs.aplbar [into-unicode 0x2352]
+	composite glyphs.wedge aplBoxTfm glyphs.aplsquare [into-unicode 0x2353]
+	composite glyphs.nabla aplBoxTfm glyphs.aplsquare [into-unicode 0x2354]
+	composite
+		begin glyphs.hwwhitecircle
+		VBar MIDDLE operBot operTop aplBoxSW
+		HBarTop SB RIGHTSB operTop aplBoxSW
+		into-unicode 0x2355
+	composite glyphs.hwarrowdown glyphs.minus [into-unicode 0x2356]
+	composite glyphs.hwarrowdown aplBoxTfm glyphs.aplsquare [into-unicode 0x2357]
+	composite glyphs.singleQuote markset.plus glyphs.underlineBelow [into-unicode 0x2358]
+	composite
+		begin glyphs.space
+		LambdaShape OPERATORSTROKE (plusTop - plusBot + ACCENT)
+		HBarBottom (SB + OPERATORSTROKE / 2) (RIGHTSB - OPERATORSTROKE / 2) 0 OPERATORSTROKE
+		Realign MIDDLE ((plusTop - plusBot) / 2) MIDDLE parenMid
+		begin markset.plus
+		begin glyphs.underlineBelow
+		into-unicode 0x2359
+	composite glyphs.hwwhitediamond markset.plus glyphs.underlineBelow [into-unicode 0x235A]
+	composite glyphs.hwsmallwhitecircle markset.plus glyphs.underlineBelow [into-unicode 0x235B]
+	composite glyphs.hwwhitecircle markset.plus glyphs.underlineBelow [into-unicode 0x235C]
+	composite
+		begin glyphs.hwsmallwhitecircle
+		ScaleAround MIDDLE parenMid 0.75
+		Realign MIDDLE parenMid MIDDLE (operBot + SMOOTH)
+		UShape operTop operBot [adviceBlackness 5] true
+		FlipAround MIDDLE parenMid
+		into-unicode 0x235D
+	composite glyphs.singleQuote aplBoxTfm glyphs.aplsquare [into-unicode 0x235E]
+	composite glyphs.hwblackstar [FlipAround MIDDLE parenMid 0.75] glyphs.mathO [into-unicode 0x235F]
+	composite glyphs.colon [Realign MIDDLE (XH/2) MIDDLE parenMid] aplBoxTfm glyphs.aplsquare [into-unicode 0x2360]
+	composite glyphs.top glyphs.dieresisAbove [into-unicode 0x2361]
+	composite glyphs.nabla glyphs.dieresisAbove [into-unicode 0x2362]
+	composite glyphs.hwblackstar glyphs.dieresisAbove [into-unicode 0x2363]
+	composite glyphs.hwsmallwhitecircle markset.plus glyphs.dieresisAbove [into-unicode 0x2364]
+	composite glyphs.hwwhitecircle markset.plus glyphs.dieresisAbove [into-unicode 0x2365]
+	composite glyphs.space [UShape operTop operBot aplBoxSW true] glyphs.aplbar [into-unicode 0x2366]
+	composite glyphs.subst glyphs.aplbar [into-unicode 0x2367]
+	composite glyphs.'asciitilde.low' glyphs.dieresisAbove [into-unicode 0x2368]
+	composite glyphs.'greater.narrow' glyphs.dieresisAbove [into-unicode 0x2369]
+	composite glyphs.minus glyphs.comma [Upright] [Translate 0 (XH / 2)] [Italify] [into-unicode 0x236A]
+	composite glyphs.nabla glyphs.overlaytilde [into-unicode 0x236B]
+	composite glyphs.'zero.unslashed' glyphs.overlaytilde [into-unicode 0x236C]
+	composite glyphs.bar glyphs.overlaytilde [into-unicode 0x236D]
+	composite glyphs.semicolon [Realign MIDDLE (XH/2) MIDDLE parenMid] markset.plus glyphs.underlineBelow [into-unicode 0x236E]
+	composite glyphs.noteq aplBoxTfm glyphs.aplsquare [into-unicode 0x236F]
+	composite glyphs.question aplBoxTfm glyphs.aplsquare [into-unicode 0x2370]
+	composite glyphs.vee glyphs.overlaytilde [into-unicode 0x2371]
+	composite glyphs.wedge glyphs.overlaytilde [into-unicode 0x2372]
+	alias 'apliota'  0x2373 'iota'
+	alias 'aplrho'   0x2374 'rho'
+	alias 'aplomega' 0x2375 'omega'
+	composite glyphs.alpha glyphs.underlineBelow [into-unicode 0x2376]
+	composite glyphs.epsilon glyphs.underlineBelow [into-unicode 0x2377]
+	composite glyphs.iota glyphs.underlineBelow [into-unicode 0x2378]
+	composite glyphs.omega glyphs.underlineBelow [into-unicode 0x2379]
+	alias 'aplalpha' 0x237A 'alpha'
+
+
+	### Others
+	alias 'mathbullet' 0x2219 'bullet'
+	alias 'mathbar' 0x2223 'bar'
+	notGlyph 'notmathbar' 0x2224 'mathbar' [mix parenMid operTop 0.5] [mix parenMid operBot 0.5] 0.1
+	alias 'mathsmallcircle' 0x2218 'hwsmallwhitecircle'
+	alias 'mathstar' 0x22C6 'hwblackstar'
+	turned 'amalg' 0x2A3F 'Pi' MIDDLE (CAP / 2)
+
+
+	sketch # sqrt
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat SB [mix parenBot parenTop 0.45]
+			curl MIDDLE parenBot [heading DOWNWARD]
+		include : dispiro
+			widths.center OPERATORSTROKE
+			flat WIDTH parenTop
+			curl MIDDLE parenBot [heading DOWNWARD]
+		save 'sqrt' 0x221A
